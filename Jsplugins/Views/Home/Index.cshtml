@@ -1,0 +1,441 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Welcome</h1>
+    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+</div>
+<form>
+<div class="row">
+    <select name="stageId" Id="stageId" data-val="true" data-val-required="required"  class="form-control" asp-items="@ViewBag.data">
+        <option value="">------</option>
+    </select>
+   @Html.ValidationMessage("stageId" , new {@class="text-danger"})
+</div>
+
+</form>
+
+
+
+
+@section Scripts{
+    @*<script>
+(function ($) {
+    var pluginName = 'fulltree';
+    var defaults = {
+        codeStopType: 'SUB',
+        url: null,
+        param: 'id',
+        extraParemters: [],
+        label: 'name',
+        value: 'id',
+        template: null,
+    }
+    function Plugin(elem, options) {
+        this.options = $.extend({}, defaults, options);
+        this.elem = elem;
+        this.child = null;
+        this.init();
+    }
+    Plugin.prototype = {
+        init: function () {
+      //      console.log((this))
+            let self = this;
+            this.elem.change(function () {
+                self.clearChild();
+                self.remote($(this).val());
+            });
+        },
+        clearChild: function() {
+            let self = this
+            console.log(this.child)
+            //console.log(this.child.fulltree('clearChild'))
+             if (this.child) {
+                this.child.find('select').fulltree('clearChild');
+                console.log(this.child.find('select').fulltree('child'))
+                this.child.remove()
+
+            }
+        }
+        , remote: function (val) {
+            let self = this;
+
+            let data = {};
+            data[this.options.param] = val;
+            this.getExtraParemeters(data);
+            $.ajax({
+                url: this.options.url,
+                type: "get",
+                data: data,
+                dataType: 'json',
+                beforeSend: function () {
+                 //   mApp.block(self.form);
+                }
+            }).done(function (data) {
+
+                //self.callBack(data);
+                self.generateList(data);
+            }).always(function () {
+              //  mApp.unblock(self.form);
+            });
+        }
+        , getExtraParemeters: function (data) {
+            this.options.extraParemters.forEach((par) => {
+                data[par.name] = $(par.element).val();
+            });
+
+        }
+        , generateList: function(data) {
+            let self = this;
+            if(data.length ==0 || data[0].codeStopType== this.options.codeStopType)
+            {
+                  this.pathArrive(data);
+                  return;
+            }
+            this.child = self.options.template();
+            this.elem.parents(`${this.options.parentNode}`).after(this.child);
+            this.populateSelect(data, this.child.find('select'));
+         //   console.log(this.child)
+        },
+        pathArrive: function(data) {
+            if (this.options.whenPathArrive) {
+                this.options.whenPathArrive(this.elem, data);
+            }
+        },
+          populateSelect: function (data, select) {
+         //     console.log(select)
+            data.forEach(item => {
+                select.append($("<option></option>")
+                    .attr("value", item[this.options.value])
+                    .text(item[this.options.label]));
+
+            });
+            this.createSelectTree(select);
+
+        }
+        , createSelectTree: function (select) {
+            select.fulltree({
+                codeStopType: this.options.codeStopType,
+                url: this.options.url,
+                parentNode: this.options.parentNode,
+                template: this.options.template
+            });
+            //$.validator.unobtrusive.parse(this.form);
+        }
+
+
+
+    }
+    $.fn[pluginName] = function (method) {
+
+        return this.each(function () {
+
+            var instance = $(this).data(pluginName);
+            if (instance) {
+                if (instance[method]) {
+                    return instance[method](Array.prototype.slice.call(arguments, 1));
+                }
+                else
+                    return $(this);
+            }
+
+            if (typeof method === 'object' || !method) {
+                instance = new Plugin($(this), method);
+                $(this).data(pluginName, instance);
+                return $(this);
+            }
+
+        });
+    }
+}(jQuery));
+
+
+</script>*@
+
+    <script>
+        (function($) {
+            var pluginName = 'fulltree';
+            var settings = {
+                stoppingCode:"SUB",
+                url:null,
+                template:null,
+                param:"id",
+                extraParemters: [{name:"test", element :'<input type="text" value="5"/>'}],
+                beforeSearch:null,
+                valKey:"id",
+                label:"name"
+            }
+            function Plugin(elem, options ) {
+                this.options = $.extend({}, settings,options, );
+                this.elem = elem;
+                this.child = null;
+                this.init();
+            }
+            Plugin.prototype = {
+
+                init: function() {
+                    let self = this;
+                  //   console.log(this);//javascipt
+                    self.elem.on("change", function() {
+                        let val =$(self.elem).val();// jquery
+                   //     console.log(this);//javascipt
+                        self.clearChildren();
+                        self.remote(val);
+                        $("form").removeData("validator").removeData("unobtrusiveValidation");
+                        $.validator.unobtrusive.parse("form");
+                          $('form').valid()
+                    });
+                  //  this.remote()
+                },
+                remote: function (val) {
+                    let self = this;
+                  //  this.beforeSearch();
+                    let data = {};
+                    data[self.options.param]= val
+                    this.getExtraParemeters(data);
+                 //   console.log(this.options);
+                    $.ajax({
+                        url: this.options.url,
+                        type: "get",
+                        data: data,
+                        dataType: 'json',
+                        beforeSend: function () {
+                          //  mApp.block(self.form);
+                        }
+                    }).done(function (data) {
+                     //   console.log(data)
+               //         //self.callBack(data);
+                        self.generateList(data);
+                    }).always(function () {
+                     //   mApp.unblock(self.form);
+                    });
+                },
+                getExtraParemeters: function(data) {
+                    let self = this // refer to object 
+                    //console.log(this.options.extraParemters);
+                    this.options.extraParemters.forEach((par) => {
+                        data[par.name] = $(par.element).val();
+                    })
+                  //  return data;
+                }, beforeSearch: function() {
+                    if (this.options.beforeSearch && $.isFunction(this.options.beforeSearch))
+                        this.options.beforeSearch.call(this);
+                }
+                , generateList: function(data) {
+                    let self = this;
+                    if (data.length == 0 || this.options.stoppingCode == data[0].codeType)
+                        return;
+
+                    self.child = $(self.options.template()).find('select');
+                    self.elem.parents(self.options.parentNode).after().append(self.child);
+                    data.forEach(res=>{
+                         //   console.log(res[self.options.label]);
+                        self.child.append($(`<option value="${res[self.options.valKey]}"> ${ res[self.options.label] }</option>`))
+                    })
+                   self.child.append($('<span class="text-danger" data-valmsg-for="name-"></span>'))
+                  
+                     console.log("ddddddddddddd",self.options);
+                    self.child.fulltree({
+                        url: self.options.url,
+                        parentNode: self.options.parentNode,
+                        template: self.options.template,
+                        beforeSearch: self.options.beforeSearch,
+                    });
+             
+
+                }, clearChildren: function() {
+                    if (this.child) {
+                          console.log("clearChildren",this.child);
+                        this.child.fulltree('clearChildren');
+                        this.child.remove();
+                    }
+
+                }
+              
+
+               
+           
+            
+            }
+  
+
+            $.fn[pluginName] = function(method) {
+
+                return this.each(function() {
+
+                    var instance = $(this).data(pluginName);
+                    if (instance) {
+                        if (instance[method]) {
+                            return instance[method](Array.prototype.slice.call(arguments, 1));
+                        }
+                        else
+                            return $(this);
+                    }
+
+                    if (typeof method === 'object' || !method) {
+                        instance = new Plugin($(this), method);
+                        $(this).data(pluginName, instance);
+                        return $(this);
+                    }
+
+                });
+            }
+        }(jQuery));
+
+    </script>
+    <script>
+
+        $('#stageId').fulltree({
+            url: "/home/LoadTree",
+            parentNode: '.row',
+            template: function() {
+                let id = Math.floor(Math.random() * 25);
+                return `<div class="row">
+                                <select name="name-${id}"  data-val="true" data-val-required="required"  class="form-control" Id="id-${id}" >
+                                <option value="">----choose------</option>
+                                </select>
+                                <span class="text-danger field-validation-valid" data-valmsg-for="name-${id}" data-valmsg-replace="true"></span>
+                                </div>`
+            },
+            beforeSearch: function() { console.log("beforeSearch") }
+        });
+
+       //(function ($) {
+                        //    var pluginName = 'fulltree';
+                        //    var defaults = {
+                        //        codeStopType: 'SUB',
+                        //        url: null,
+                        //        param: 'parentId',
+                        //        extraParemters: [],
+                        //        label: 'title',
+                        //        value: 'id',
+                        //        template: null,
+                        //    }
+                        //    function Plugin(elem, options) {
+                        //        this.options = $.extend({}, defaults, options);
+                        //        this.elem = elem;
+                        //        this.child = null;
+                        //        this.form = this.elem.parents('form')
+                        //        this.init();
+                        //    }
+                        //    Plugin.prototype = {
+                        //        init: function () {
+                        //            let self = this;
+                        //            this.elem.change(function () {
+                        //                self.clearChild();
+                        //                self.remote($(this).val());
+                        //            });
+                        //        }
+                        //        ,
+                        //        beforeSearch: function () {
+                        //            if (this.options.beforeSearch) this.options.beforeSearch();
+                        //        },
+                        //        callBack: function (data) {
+                        //            if (this.options.whenCallBack) this.options.whenCallBack(this.elem, data);
+                        //        }
+                        //        , remote: function (val) {
+                        //            let self = this;
+                        //            this.beforeSearch();
+                        //            let data = {};
+                        //            data[this.options.param] = val;
+                        //            this.getExtraParemeters(data);
+                        //            $.ajax({
+                        //                url: this.options.url,
+                        //                type: "get",
+                        //                data: data,
+                        //                dataType: 'json',
+                        //                beforeSend: function () {
+                        //                    mApp.block(self.form);
+                        //                }
+                        //            }).done(function (data) {
+
+                        //                self.callBack(data);
+                        //                self.generateList(data);
+                        //            }).always(function () {
+                        //                mApp.unblock(self.form);
+                        //            });
+                        //        }
+                        //        , getExtraParemeters: function (data) {
+                        //            this.options.extraParemters.forEach((par) => {
+                        //                data[par.name] = $(par.element).val();
+                        //            });
+
+                        //        }
+
+                        //        , generateList: function (data) {
+                        //            let self = this;
+                        //            if (data.length == 0 || data[0].codeType == this.options.codeStopType) {
+                        //                this.pathArrive(data);
+                        //                return;
+                        //            }
+
+                        //            this.child = $(this.options.template());
+                        //            this.elem.parents(`${this.options.parentNode}`).after(this.child);
+                        //            this.populateSelect(data, this.child.find('select'));
+
+
+                        //        },
+                        //        populateSelect: function (data, select) {
+                        //            data.forEach(item => {
+                        //                select.append($("<option></option>")
+                        //                    .attr("value", item[this.options.value])
+                        //                    .text(item[this.options.label]));
+
+                        //            });
+                        //            this.createSelectTree(select);
+
+                        //        }
+                        //        , createSelectTree: function (select) {
+                        //            select.fulltree({
+                        //                codeStopType: this.options.codeStopType,
+                        //                url: this.options.url,
+                        //                parentNode: this.options.parentNode,
+                        //                template: this.options.template
+                        //            });
+                        //            $.validator.unobtrusive.parse(this.form);
+                        //        }
+                        //        ,
+                        //        pathArrive: function (data) {
+                        //            if (this.options.whenPathArrive) {
+                        //                this.options.whenPathArrive(this.elem, data);
+                        //            }
+                        //        },
+                        //        refresh: function () {
+                        //            this.clearChild();
+                        //            this.remote(this.elem.val());
+                        //        },
+                        //        clearChild: function () {
+                        //            let self = this;
+                        //            if (this.child) {
+                        //                this.child.find('select').fulltree('clearChild');
+                        //                this.child.remove()
+
+                        //            }
+
+                        //        }
+
+                        //    }
+                        //    $.fn[pluginName] = function (method) {
+                        //        return this.each(function () {
+                        //            var instance = $(this).data(pluginName);
+                        //            if (instance) {
+                        //                if (instance[method]) {
+                        //                    return instance[method](Array.prototype.slice.call(arguments, 1));
+                        //                }
+                        //                else
+                        //                    return $(this);
+                        //            }
+                        //            if (typeof method === 'object' || !method) {
+
+                        //                instance = new Plugin($(this), method);
+                        //                $(this).data(pluginName, instance);
+                        //                return $(this);
+                        //            }
+
+
+                        //        });
+                        //    }
+                        //})(jQuery);
+    </script>
+}
